@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
-import com.websystique.springboot.configuration.JpaConfiguration;
+import com.websystique.springboot.configuration.user.JpaConfiguration;
 
 
 @Import(JpaConfiguration.class)

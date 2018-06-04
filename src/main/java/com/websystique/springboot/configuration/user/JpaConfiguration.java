@@ -1,4 +1,4 @@
-package com.websystique.springboot.configuration;
+package com.websystique.springboot.configuration.user;
 
 import java.util.Properties;
 
@@ -27,9 +27,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.websystique.springboot.repositories",
-		entityManagerFactoryRef = "entityManagerFactory",
-		transactionManagerRef = "transactionManager")
+@EnableJpaRepositories(basePackages = "com.websystique.springboot.repositories.user",
+        entityManagerFactoryRef = "userEntityManagerFactory",
+        transactionManagerRef = "userTransactionManager")
 @EnableTransactionManagement
 public class JpaConfiguration {
 
@@ -55,8 +55,9 @@ public class JpaConfiguration {
 	 * Configure HikariCP pooled DataSource.
 	 */
 	@Bean
-	public DataSource dataSource() {
-		DataSourceProperties dataSourceProperties = dataSourceProperties();
+    @Primary
+    public DataSource userDataSource() {
+        DataSourceProperties dataSourceProperties = dataSourceProperties();
 			HikariDataSource dataSource = (HikariDataSource) DataSourceBuilder
 					.create(dataSourceProperties.getClassLoader())
 					.driverClassName(dataSourceProperties.getDriverClassName())
@@ -72,12 +73,13 @@ public class JpaConfiguration {
 	/*
 	 * Entity Manager Factory setup.
 	 */
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws NamingException {
-		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
-		factoryBean.setDataSource(dataSource());
-		factoryBean.setPackagesToScan(new String[] { "com.websystique.springboot.model" });
-		factoryBean.setJpaVendorAdapter(jpaVendorAdapter());
+    @Primary
+    @Bean
+    public LocalContainerEntityManagerFactoryBean userEntityManagerFactory() throws NamingException {
+        LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setDataSource(userDataSource());
+        factoryBean.setPackagesToScan(new String[]{"com.websystique.springboot.model.user"});
+        factoryBean.setJpaVendorAdapter(jpaVendorAdapter());
 		factoryBean.setJpaProperties(jpaProperties());
 		return factoryBean;
 	}
@@ -85,8 +87,9 @@ public class JpaConfiguration {
 	/*
 	 * Provider specific adapter.
 	 */
-	@Bean
-	public JpaVendorAdapter jpaVendorAdapter() {
+    @Primary
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
 		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
 		return hibernateJpaVendorAdapter;
 	}
@@ -106,12 +109,18 @@ public class JpaConfiguration {
 		return properties;
 	}
 
-	@Bean
-	@Autowired
-	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-		JpaTransactionManager txManager = new JpaTransactionManager();
-		txManager.setEntityManagerFactory(emf);
-		return txManager;
-	}
+    @Primary
+    @Bean
+    public PlatformTransactionManager userTransactionManager() {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        try {
+            txManager.setEntityManagerFactory(userEntityManagerFactory().getObject());
+        } catch (NamingException e) {
+
+            System.out.println("exception in JPACONFIGURATION in USER");
+            e.printStackTrace();
+        }
+        return txManager;
+    }
 
 }

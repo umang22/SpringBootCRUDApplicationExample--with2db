@@ -20,6 +20,22 @@ datasource:
       dialect: org.hibernate.dialect.MySQLDialect
 ---
 spring:
+  profiles: local
+datasource:
+  sampleapp:
+    url: jdbc:mysql://localhost:3306/websystique1
+    username: root
+    password:
+    driverClassName: com.mysql.jdbc.Driver
+    defaultSchema:
+    maxPoolSize: 10
+    hibernate:
+      hbm2ddl.method: update
+      show_sql: true
+      format_sql: true
+      dialect: org.hibernate.dialect.MySQLDialect
+---
+spring:
   profiles: prod
 datasource:
   sampleapp:

@@ -1,4 +1,4 @@
-package com.websystique.springboot.model;
+package com.websystique.springboot.model.user;
 
 import org.hibernate.validator.constraints.NotEmpty;
 

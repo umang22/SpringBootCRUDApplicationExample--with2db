@@ -2,6 +2,8 @@ package com.websystique.springboot.controller;
 
 import java.util.List;
 
+import com.websystique.springboot.model.product.Product;
+import com.websystique.springboot.service.product.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.websystique.springboot.model.User;
-import com.websystique.springboot.service.UserService;
+import com.websystique.springboot.model.user.User;
+import com.websystique.springboot.service.user.UserService;
 import com.websystique.springboot.util.CustomErrorType;
 
 @RestController
@@ -27,6 +29,17 @@ public class RestApiController {
 
 	@Autowired
 	UserService userService; //Service which will do all data retrieval/manipulation work
+	ProductService productService;
+
+	@RequestMapping(value = "/product/", method = RequestMethod.GET)
+	public ResponseEntity<List<Product>> listAllProduct() {
+		List<Product> products = productService.findAllProduct();
+		if (products.isEmpty()) {
+			return new ResponseEntity(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
+	}
+
 
 	// -------------------Retrieve All Users---------------------------------------------
 
